@@ -11,7 +11,16 @@ const validationRegistration = [
     .notEmpty()
     .withMessage("Username is Required")
     .isLength({ min: 3 })
-    .withMessage("Username Must be at least 3 or more character"),
+    .withMessage("Username Must be at least 3 or more character")
+    .custom((value) => {
+      if (value == "admin") {
+        throw new Error('Username "Admin" is not allowed.');
+      }
+      return true;
+    })
+    .customSanitizer((value) => {
+      return value.toLowerCase();
+    }),
   body("email")
     .isEmail()
     .withMessage("Please Provide Valid Email Address")
@@ -34,16 +43,18 @@ const validationRegistration = [
 ];
 
 app.get("/myform", (r, res) => {
-  res.render("myform",{error : 0});
+  res.render("myform", { error: 0 });
 });
 
 app.post("/sav", validationRegistration, (r, res) => {
   const errors = validationResult(r);
-//   if (!errors.isEmpty()) {
-//     return res.status(400).json({ errors: errors.array() });
-//   }
-  res.render('myform',{error : errors.array()})
-//   res.send(r.body);
+  //   if (!errors.isEmpty()) {
+  //     return res.status(400).json({ errors: errors.array() });
+  //   }
+    console.log(r.body);
+  res.render("myform", { error: errors.array() });
+
+  //   res.send(r.body);
 });
 
 app.listen(3030, () => {
